@@ -250,6 +250,7 @@ db.settings({
 <script>
 
   getHomeData();
+  tatol();
   document.addEventListener('prechange', function (event) {
     if (event.index == 0) {
       console.log('Home clicked');
@@ -264,8 +265,11 @@ db.settings({
       console.log('Product clicked');
       // get data for cart screen  
       var name = localStorage.getItem('name');
-      if (name==null) {
+
+      var item = localStorage.getItem('items');
+      if (name==null&&item==null) {
         getallProduct();
+
       }
      else{ getallProduct(name)}
      localStorage.clear();
@@ -434,6 +438,56 @@ myNavigator.pushPage('detailProduct.html');
 }
 
 //================================================================================================================================
+
+function search(search) {
+   
+   const filterItems = (needle, heystack) => {
+    let query = needle.toLowerCase();
+    return heystack.filter(item => item.data().title.toLowerCase().indexOf(needle) >= 0);
+  }
+  console.log("55+", filterItems(search, data));
+  var item=filterItems(search, data);
+  console.log("xxx",item)
+  localStorage.setItem('items', item);
+  
+  console.log('tong',item);
+test(item);
+document.getElementById('tabbar').setActiveTab(2);
+    // localStorage.setItem('title', item);
+  }
+  const data = []
+
+  function tatol() {
+    console.log(search);
+    db.collection("products").get()
+      .then(function (querySnapshot) {
+
+        querySnapshot.docs.forEach(function (item) {
+          data.push(item)
+          console.log(data)
+        });
+        
+      })
+    
+  }
+
+
+function test(title){
+console.log("888",title);
+
+    
+ 
+    console.log('tset',title);
+
+      
+        
+        var product_template = $('#product_template').html();
+         var html = ejs.render(product_template, { product: title });
+        $('#product').html(html);
+  
+
+
+ }
 </script>
 
 </html>
