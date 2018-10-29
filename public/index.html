@@ -371,7 +371,7 @@ function getAccountData() {
 }
 
 
-function getallProduct(name) {
+function getallProduct(name,item) {
 
 
      if (name ==null) {
@@ -481,9 +481,9 @@ console.log("888",title);
 
       
         
-        var product_template = $('#product_template').html();
-         var html = ejs.render(product_template, { product: title });
-        $('#product').html(html);
+        var allP_template = $('#allP_template').html();
+         var html = ejs.render(allP_template, { allP : title });
+        $('#allP').html(html);
   
 
 
