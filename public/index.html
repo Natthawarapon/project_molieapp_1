@@ -77,7 +77,7 @@ db.settings({
   <template id="tab1.html" style="background:#FFFF00">
     <ons-page id="Tab1" >
       <p style="text-align: center; margin-top: 5px;">
-        <ons-search-input placeholder="Search" onchange="ons.notification.alert('Searched for: ' + this.value)"></ons-search-input>
+        <ons-search-input placeholder="Search" onchange="search(this.value)"></ons-search-input>
       </p>
       <ons-carousel swipeable auto-scroll overscrollable id="carousel" style="height: 250px;">
         <ons-carousel-item id="carousel1" style="background: url('') no-repeat center; background-size: contain;">
@@ -265,16 +265,16 @@ db.settings({
       console.log('Product clicked');
       // get data for cart screen  
       var name = localStorage.getItem('name');
-
       var item = localStorage.getItem('items');
       if (name==null&&item==null) {
         getallProduct();
-
       }
-     else{ getallProduct(name)}
+     else if (name!=null&&item==null){ 
+       getallProduct(name)
      localStorage.clear();
-
-    }
+    }else {
+      localStorage.clear();
+        }}
     else if (event.indext == 3){
       console.log('Account clicked');
       getAccountData();
