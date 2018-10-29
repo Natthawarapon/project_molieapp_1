@@ -4,6 +4,7 @@
 <head>
   <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
   <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
   <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
   <script src="ejs.js"></script>
@@ -17,7 +18,8 @@
       padding-left: 5px;
       padding-bottom: 5px;
       padding-right: 5px;
-      color: #7FC7D1;
+      color: black;
+   
     }
   </style>
   
@@ -71,12 +73,13 @@ db.settings({
     </ons-tabbar>
   </ons-page>
 </ons-navigator>
+
   <template id="tab1.html" style="background:#FFFF00">
     <ons-page id="Tab1" >
-      <p style="text-align: center; margin-top: 10px;">
+      <p style="text-align: center; margin-top: 5px;">
         <ons-search-input placeholder="Search" onchange="ons.notification.alert('Searched for: ' + this.value)"></ons-search-input>
       </p>
-      <ons-carousel swipeable auto-scroll overscrollable id="carousel" style="height: 300px;">
+      <ons-carousel swipeable auto-scroll overscrollable id="carousel" style="height: 250px;">
         <ons-carousel-item id="carousel1" style="background: url('') no-repeat center; background-size: contain;">
         </ons-carousel-item>
         <ons-carousel-item id="carousel2" style="background: url('') no-repeat center; background-size: contain;">
@@ -91,7 +94,7 @@ db.settings({
         <ons-row style="height:120px" vertical-align="center">  
         <% 
         categories.forEach(function(category){%>  
-        <ons-col style ="background:#FFFF00; border:solid 1px white; color:black; id ="categories" style="background:#66ff99;" width="33%"  onclick="change_tab('<%= category.name %>')">
+        <ons-col style ="background: <%= category.color %>; border:solid 1px white; color:black; id ="categories" style="background:#66ff99;" width="33%"  onclick="change_tab('<%= category.name %>')">
           <p style="text-align: center; margin: 10px;">
             <ons-icon size="60px" icon="<%= category.icon %>"></ons-icon>
           </p>
@@ -109,30 +112,36 @@ db.settings({
 
   <template id="tab2.html">
     <ons-page id="Tab2">
+      <div id="showDetaiCrat"></div>
       <div><ons-list>
         <ons-list-header>Shopping Cart</ons-list-header>
-        <div id="pic">
-
-        <script id="pic_template" type="text/template">
-          <% cart.forEach(function(cart){%>  
-        <ons-list-item>
-          <div class="left">
-            <img class="list-item__thumbnail" id="photo" src="<%= cart.photo %>">
-          </div>
-          <div class="center">
-            <span class="list-item__title"><%= cart.itemname %></span>
-            <span class="list-item__subtitle" style="color: blue"><%= cart.price %></span>
-          </div>
-          <div class="right">
+        <div id="showDataCart"></div>
+        <div>
+        <script id="cart_template" type="text/template">
+         
+            <ons-list>
+            
+            <% cartData.forEach(function(cartData){
+            var cartData = cartData.data(); 
+            %>
+            <ons-list-item>
+            <div class="left">
+            <img class="list-item__thumbnail" src="<%=cartData.photo%>">
+            </div>
+            <div class="center">
+            <span class="list-item__title"><%=cartData.title%></span>
+            <span class="list-item__subtitle" style="color: blue"><%=cartData.price%></span>
+            </div>
+            <div class="right">
             <p style="text-align: center; margin: 10px;">
-              <ons-icon style="color: grey" size="30px" icon="md-delete"></ons-icon>
+            <ons-icon style="color: grey" size="30px" icon="md-delete"></ons-icon>
             </p>
-          </div>
-        </ons-list-item>
-        <%});%>
-      </script>
-      </ons-list></div>
-    
+            </div>
+            </ons-list-item> 
+            </ons-list>
+            <%})%>
+            </script>
+        
       <div >
          <p style="text-align: center; margin: 10px;">
         <ons-button modifier="large">PROCEED TO PAY</ons-button>
@@ -221,6 +230,8 @@ db.settings({
                       <ons-list-item>React</ons-list-item>
                     </ons-list>
                   </div>
+               
+                  <ons-button modifier="large" onclick="addtocart('<%= data.title %>')" class="button button--large" >ADD TO CART</ons-button>
                   <%})%>
                 </ons-card>
                 
@@ -239,7 +250,6 @@ db.settings({
 <script>
 
   getHomeData();
-
   document.addEventListener('prechange', function (event) {
     if (event.index == 0) {
       console.log('Home clicked');
@@ -298,25 +308,32 @@ db.settings({
   
   }
 //================================================================================================================================
-  function getCartData() {
-    var docRef = db.collection("UI").doc("cart");
-    docRef.get().then(function (doc) {
+var dataCart = [];
+function addtocart(addtocart){
+  localStorage.clear('quentinTarantino');
+localStorage.setItem('quentinTarantino',addtocart);
+var retrievedData = localStorage.getItem("quentinTarantino");
+console.log(retrievedData);
+dataCart.push(retrievedData);
+alert(dataCart);
+}
 
-      if (doc.exists) {
-
-        //display data
-        console.log("Document data:", doc.data());
-        var data = doc.data();
-        var pic_template = $('#pic_template').html();
-        var html = ejs.render(pic_template, { cart: data.cart });
-        $('#pic').html(html);
-
-      } else {
-        console.log("No such document!");
-      }
-    }).catch(function (error) {
-      console.log("Error getting document:", error);
-    });
+function getCartData() {
+  
+  console.log(dataCart);
+  document.getElementById('showDataCart').innerHTML = '';
+  dataCart.forEach(function(dataCart){
+    var apr = db.collection("products").where("title", "==",dataCart);
+    apr.get().then(function (querySnapshot) {
+      console.log(querySnapshot.docs)
+      var cart_template = $('#cart_template').html();
+      var html = ejs.render(cart_template, { cartData: querySnapshot.docs });
+      
+      $('#showDataCart').append(html); 
+    
+    })
+    
+  })
 
   }
 
@@ -341,6 +358,9 @@ db.settings({
     });
 
  }
+
+
+
 //================================================================================================================================
 function getAccountData() {
  
