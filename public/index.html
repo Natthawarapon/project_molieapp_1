@@ -158,13 +158,13 @@ db.settings({
         </p>
         <hr>
         <p><b>แบรนด์สุดฮิต</b> อัพเดทใหม่วันนี้</p>
-            <div id="allP">
+            <div id="allProduct">
   
             </div>
          <script id="allP_template" type="text/template"> 
           <ons-row >
-        <% allP.forEach(function(allP){
-          var item = allP.data();
+        <% allProduct.forEach(function(allProduct){
+          var item = allProduct.data();
           %> 
           <ons-col width="33%" onclick="getDetailproduct('<%=item.title%>')">
             <ons-card  id="push-button" >
@@ -250,7 +250,7 @@ db.settings({
 <script>
 
   getHomeData();
-  tatol();
+  checksearch();
   document.addEventListener('prechange', function (event) {
     if (event.index == 0) {
       console.log('Home clicked');
@@ -263,7 +263,7 @@ db.settings({
     }
     else if (event.index == 2) {
       console.log('Product clicked');
-      // get data for cart screen  
+      // get data for product screen  
       var name = localStorage.getItem('name');
       var item = localStorage.getItem('items');
       if (name==null&&item==null) {
@@ -286,7 +286,6 @@ db.settings({
     docRef.get().then(function (doc) {
 
       if (doc.exists) {
-
         //display data
         console.log("Document data:", doc.data());
         var data = doc.data();
@@ -301,15 +300,12 @@ db.settings({
         var html = ejs.render(icon_template, { categories: data.categories });
         $('#icons').html(html);
 
-
       } else {
         console.log("No such document!");
       }
     }).catch(function (error) {
       console.log("Error getting document:", error);
-    });
-
-  
+    }); 
   }
 //================================================================================================================================
 var dataCart = [];
@@ -323,7 +319,6 @@ alert(dataCart);
 }
 
 function getCartData() {
-  
   console.log(dataCart);
   document.getElementById('showDataCart').innerHTML = '';
   dataCart.forEach(function(dataCart){
@@ -332,16 +327,12 @@ function getCartData() {
       console.log(querySnapshot.docs)
       var cart_template = $('#cart_template').html();
       var html = ejs.render(cart_template, { cartData: querySnapshot.docs });
-      
       $('#showDataCart').append(html); 
-    
     })
-    
   })
-
   }
 
-
+//=============================================================================================================================================
  function addNewData() {
    var data ={
      pid : 5,
@@ -350,7 +341,6 @@ function getCartData() {
      category : 'electronic'
    }
    db.collection("products").add(data)
-   
    .then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
             // doc.data() is never undefined for query doc snapshots
@@ -360,58 +350,45 @@ function getCartData() {
     .catch(function(error) {
         console.log("Error getting documents: ", error);
     });
-
  }
 
-
-
 //================================================================================================================================
+//data_account
 function getAccountData() {
- 
+
+
+  
 }
-
-
+//================================================================================================================================
+//show_all_product
 function getallProduct(name,item) {
-
-
      if (name ==null) {
       db.collection("products").get()
         .then(function (querySnapshot) {
-
-        
-
           var product_template = $('#allP_template').html();
           console.log(querySnapshot.docs);
-          var html = ejs.render(product_template, { allP : querySnapshot.docs });
-
-          $('#allP').html(html);
-
+          var html = ejs.render(product_template, { allProduct : querySnapshot.docs });
+          $('#allProduct').html(html);
         })
         .catch(function (error) {
           console.log("Error getting documents: ", error);
         });
-
     }else {localStorage.clear();
       db.collection("products").where("category","==",name).get()
         .then(function (querySnapshot) {
-
           var product_template = $('#allP_template').html();
           console.log(querySnapshot.docs);
-          var html = ejs.render(product_template, { allP: querySnapshot.docs });
-
-          $('#allP').html(html);
-
+          var html = ejs.render(product_template, { allProduct: querySnapshot.docs });
+          $('#allProduct').html(html);
         })
-
         .catch(function (error) {
           console.log("Error getting documents: ", error);
         });
-
     }
- 
   }
 
-
+//===================================================================================================================================
+//detail_product
 function showDetailproduct() {
     var dataproduct = localStorage.getItem('getDetailproduct');
     var apr = db.collection("products").where("title", "==", dataproduct);
@@ -422,72 +399,52 @@ function showDetailproduct() {
     })
   
   }
-
+  //change_tab_category
 function change_tab(name) {
   console.log(name);
   document.getElementById('tabbar').setActiveTab(2);
   localStorage.setItem('name',name)
-  
 }
-
+//detailproduct
 function getDetailproduct(getDetailproduct){
 localStorage.setItem("getDetailproduct",getDetailproduct)
 showDetailproduct();
 myNavigator.pushPage('detailProduct.html');
-
 }
-
 //================================================================================================================================
-
+//get_search
 function search(search) {
-   
    const filterItems = (needle, heystack) => {
     let query = needle.toLowerCase();
     return heystack.filter(item => item.data().title.toLowerCase().indexOf(needle) >= 0);
   }
-  console.log("55+", filterItems(search, data));
+  console.log("search", filterItems(search, data));
   var item=filterItems(search, data);
-  console.log("xxx",item)
-  localStorage.setItem('items', item);
-  
-  console.log('tong',item);
-test(item);
+  console.log("search_item",item)
+  localStorage.setItem('items', item); 
+  console.log('item',item);
+  showsearch_product(item);
 document.getElementById('tabbar').setActiveTab(2);
-    // localStorage.setItem('title', item);
+    
   }
+//checksearch_with_datainfirebase
   const data = []
-
-  function tatol() {
+  function checksearch() {
     console.log(search);
     db.collection("products").get()
       .then(function (querySnapshot) {
-
         querySnapshot.docs.forEach(function (item) {
           data.push(item)
           console.log(data)
         });
-        
-      })
-    
+      }) 
   }
-
-
-function test(title){
-console.log("888",title);
-
-    
- 
-    console.log('tset',title);
-
-      
-        
+//showsearch_product
+function showsearch_product(title){
+console.log("title_pro",title);
         var allP_template = $('#allP_template').html();
-         var html = ejs.render(allP_template, { allP : title });
-        $('#allP').html(html);
-  
-
-
+         var html = ejs.render(allP_template, { allProduct : title });
+        $('#allProduct').html(html);
  }
 </script>
-
 </html>
